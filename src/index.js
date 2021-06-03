@@ -1,17 +1,28 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import { ApolloProvider } from "@apollo/react-hooks";
+import ApolloClient from "apollo-boost";
+import App from "./App";
+import NewPost from "./components/NewPost";
+import EditPost from "./components/EditPost";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
+const client = new ApolloClient({
+  uri: "https://react-gql-2021.herokuapp.com/v1/graphql",
+});
+
+const rootElement = document.getElementById("root");
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ApolloProvider client={client}>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/" component={App} />
+          <Route exact path="/new" component={NewPost} />
+          <Route exact path="/edit/:id" component={EditPost} />
+        </Switch>
+      </BrowserRouter>
+    </ApolloProvider>
   </React.StrictMode>,
-  document.getElementById('root')
+  rootElement
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
