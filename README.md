@@ -1,70 +1,115 @@
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Some notes
 
-## Available Scripts
+getting data using - QUERY
+updating data - MUTATION
 
-In the project directory, you can run:
+query queryName {
+posts{
+id
+}
+}
 
-### `npm start`
+query MyQuery {
+posts_by_pk(id: "670d1546-8ad0-4d00-b195-8b1f6cc81348"){
+id,
+createdAt,
+body,
+title
+}
+}
+// insert
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+mutation MyMutation {
+insert_posts(objects: {body: "Chamber of Secrets", title: "Harry Potter"}) {
+returning {
+body
+createdAt
+id
+title
+}
+}
+}
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+//update
 
-### `npm test`
+mutation MyMutation {
+update_posts(where: {id: {\_eq: "670d1546-8ad0-4d00-b195-8b1f6cc81348"}}, \_set: {body: "Socerers Stone\t", title: "Harry Potter and"}) {
+returning {
+body
+createdAt
+id
+title
+}
+}
+}
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+/delete
 
-### `npm run build`
+mutation MyMutation {
+delete_posts(where: {id: {\_eq: "670d1546-8ad0-4d00-b195-8b1f6cc81348"}}) {
+affected_rows
+}
+}
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+//dynamic query
+mutation CreatePost($title :String!,$body: String!) {
+insert_posts(objects: {body: $body, title: $title}) {
+returning {
+body
+createdAt
+id
+title
+}
+}
+}
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+query GetPost($id:uuid!) {
+posts_by_pk(id: $id){
+id,
+createdAt,
+body,
+title
+}
+}
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+mutation UpdatePost($id:uuid!,$body:String!,$title:String!) {
+update_posts(where: {id: {\_eq: $id}}, \_set: {body: $body, title: $title}) {
+returning {
+body
+createdAt
+id
+title
+}
+}
+}
 
-### `npm run eject`
+mutation DeletePost($id:uuid!) {
+delete_posts(where: {id: {\_eq: $id}}) {
+affected_rows
+}
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+1. In your index.js import Apollog Client
+   import ApolloClient from "apollo-boost";
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+2) Store the client
+   const client = new ApolloClient({
+   uri: "https://react-graphql0.herokuapp.com/v1/graphql",
+   });
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+3) Now to pass it through the entire app
+   import { ApolloProvider } from "@apollo/react-hooks";
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+4) <ApolloProvider client={client}>
+      <BrowserRouter>
+        <Switch>
+          <Route exact path="/" component={App} />
+          <Route exact path="/new" component={NewPost} />
+          <Route exact path="/edit/:id" component={EditPost} />
+        </Switch>
+      </BrowserRouter>
+    </ApolloProvider>
 
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+5

@@ -37,7 +37,7 @@ function App() {
     }
   `;
 
-  const { loading, data } = useQuery(GET_POSTS, {
+  const { loading, data, refetch } = useQuery(GET_POSTS, {
     fetchPolicy: "network-only",
   });
   if (loading) {
@@ -61,7 +61,7 @@ function App() {
       </header>
       {data.posts.length === 0 && <Empty />}
       {data.posts.map((post) => {
-        return <Posts post={post} key={post.id} />;
+        return <Posts refetch={refetch} post={post} key={post.id} />;
       })}
     </>
   );

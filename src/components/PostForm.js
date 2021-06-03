@@ -13,7 +13,7 @@ const classes = {
   error: "font-bold text-red-500",
 };
 
-function PostForm({ onSave, post }) {
+function PostForm({ onSave, post, loading, error }) {
   const history = useHistory();
   post = post ? post : { title: "", body: "" };
   const [title, setTitle] = useState(post?.title);
@@ -48,7 +48,7 @@ function PostForm({ onSave, post }) {
           />
         </div>
         <div>
-          <button className={classes.button} type="submit">
+          <button disabled={loading} className={classes.button} type="submit">
             Submit
           </button>
           <button
@@ -61,6 +61,7 @@ function PostForm({ onSave, post }) {
             Back
           </button>
         </div>
+        {error && <p className={classes.error}>{error.message}</p>}
       </form>
     </div>
   );

@@ -1,5 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { gql } from "apollo-boost";
+import { useMutation } from "@apollo/react-hooks";
 
 const classes = {
   container: "bg-white border rounded-lg overflow-hidden",
@@ -12,7 +14,25 @@ const classes = {
   nav: "my-4 mx-2 text-center",
 };
 
-function Post({ id, post }) {
+const DELETE_POST = gql`
+  mutation DeletePost($id: uuid!) {
+    delete_posts(where: { id: { _eq: $id } }) {
+      affected_rows
+    }
+  }
+`;
+
+function Post({ id, post, refetch }) {
+  const [deletePost] = useMutation(DELETE_POST, {
+    onCompleted: () => {
+      refetch();
+    },
+  });
+  const handleDeletePost = (id) => {
+    if (window.confirm("Are you sure you want to delete ?")) {
+      deletePost({ variables: { id } });
+    }
+  };
   return (
     <>
       <div className={classes.container}>
@@ -45,7 +65,12 @@ function Post({ id, post }) {
             </Link>
           </li>
           <li className={classes.li}>
-            <button className={classes.delete}>Delete</button>
+            <button
+              onClick={() => handleDeletePost(post.id)}
+              className={classes.delete}
+            >
+              Delete
+            </button>
           </li>
         </ul>
       </nav>
