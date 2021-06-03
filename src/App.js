@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import Empty from "./Empty";
 import { useApolloClient, useQuery } from "@apollo/react-hooks";
@@ -6,22 +6,25 @@ import { gql } from "apollo-boost";
 import Posts from "./components/Post";
 function App() {
   const client = useApolloClient();
-  client
-    .query({
-      query: gql`
-        {
-          posts {
-            id
-            body
-            title
-            createdAt
+  useEffect(() => {
+    client
+      .query({
+        query: gql`
+          {
+            posts {
+              id
+              body
+              title
+              createdAt
+            }
           }
-        }
-      `,
-    })
-    .then((data) => {
-      console.log(data, "data");
-    });
+        `,
+      })
+      .then((data) => {
+        console.log(data, "data called again");
+      });
+    return () => {};
+  }, [client]);
 
   const GET_POSTS = gql`
     {
@@ -34,7 +37,9 @@ function App() {
     }
   `;
 
-  const { loading, data } = useQuery(GET_POSTS);
+  const { loading, data } = useQuery(GET_POSTS, {
+    fetchPolicy: "network-only",
+  });
   if (loading) {
     return <div> Loading..</div>;
   }

@@ -1,5 +1,6 @@
-import React from "react";
-
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
+import "./PostForm.css";
 const classes = {
   container: "w-full max-w-md",
   label: "text-sm block font-bold  pb-2",
@@ -12,31 +13,52 @@ const classes = {
   error: "font-bold text-red-500",
 };
 
-function PostForm() {
+function PostForm({ onSave, post }) {
+  const history = useHistory();
+  post = post ? post : { title: "", body: "" };
+  const [title, setTitle] = useState(post?.title);
+  const [body, setBody] = useState(post?.body);
+  function onSubmit(event) {
+    event.preventDefault();
+    onSave({ title, body });
+  }
   return (
     <div className={classes.container}>
-      <form className={classes.form}>
+      <form onSubmit={onSubmit} className={classes.form}>
         <div className={classes.div}>
           <label className={classes.label}>Title</label>
           <input
+            defaultValue={post.title}
             required
             name="title"
             placeholder="Enter your post title"
             className={classes.input}
+            onChange={(event) => setTitle(event.target.value)}
           />
         </div>
         <div className={classes.div}>
           <label className={classes.label}>Body</label>
           <textarea
             required
+            defaultValue={post.body}
             name="body"
             className={classes.input}
             placeholder="Enter your post content"
+            onChange={(event) => setBody(event.target.value)}
           />
         </div>
         <div>
           <button className={classes.button} type="submit">
             Submit
+          </button>
+          <button
+            onClick={() => {
+              history.push("/");
+            }}
+            className={`${classes.button} back-button`}
+            to="/"
+          >
+            Back
           </button>
         </div>
       </form>
